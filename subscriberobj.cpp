@@ -84,6 +84,17 @@ bool Subscribable::removeFromMap(SubscribableEvent s, int function_id) {
 	return false;
 }
 
+std::vector<SubscribeFunction<>*> Subscribable::getFromMap(SubscribableEvent s) {
+
+	std::vector<SubscribeFunction<>*> found_functions;
+	// check if key exists in map
+	if (this->subscribers.find(s) != this->subscribers.end()) {
+		found_functions = this->subscribers[s];
+	} 
+
+	return found_functions;
+}
+
 int Subscribable::subscribe(SubscribableEvent s, SubscribeFunction<> *event) {
   // subscribe
   return this->addToMap(s, event);
@@ -137,6 +148,30 @@ void Subscribable::notify(unsigned int id, args... a) {
 template <typename... args>
 void Subscribable::notify(std::string id, args... a) {
   this->notify(SubscribableEvent{0, id}, a...);
+}
+
+void Subscribable::notify(SubscribableEvent e) {
+  auto functions = this->getFromMap(e);
+  if (functions.size() <= 0)
+    return;
+
+  for (auto &f : functions) {
+    f->func();
+  };
+}
+
+void Subscribable::notify(unsigned int id) {
+  this->notify(SubscribableEvent{id, ""});
+}
+
+void Subscribable::notify(std::string id) {
+  this->notify(SubscribableEvent{0, id});
+}
+
+
+
+void ExampleSubscribable::test() {
+	this->notify(SubscribableEvent{1, "test"});
 }
 
 }; // namespace fofx
