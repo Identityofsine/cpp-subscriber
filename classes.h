@@ -24,10 +24,11 @@ template <typename... args> struct SubscribeFunction {
 class Subscribable {
 
 private:
-  std::map<SubscribableEvent, std::vector<SubscribeFunction<void>>> subscribers;
-  int addToMap(SubscribableEvent s, SubscribeFunction<void> *event);
+  std::map<SubscribableEvent, std::vector<SubscribeFunction<> *>> subscribers;
+  int addToMap(SubscribableEvent s, SubscribeFunction<> *event);
   std::vector<SubscribeFunction<void>> getFromMap(SubscribableEvent s);
-  void removeFromMap(SubscribableEvent s, SubscribeFunction<void> *event);
+  bool removeFromMap(SubscribableEvent s, SubscribeFunction<> *event);
+  bool removeFromMap(SubscribableEvent s, int function_id);
   std::vector<SubscribableEvent> validEvents;
 
 protected:
@@ -39,23 +40,23 @@ public:
   Subscribable(std::vector<SubscribableEvent> valid_events = {}) {
     // init map
     subscribers =
-        std::map<SubscribableEvent, std::vector<SubscribeFunction<void>>>();
+        std::map<SubscribableEvent, std::vector<SubscribeFunction<> *>>();
     this->validEvents = valid_events;
   }
 
   // using SubscriableEvent
-  int subscribe(SubscribableEvent s, SubscribeFunction<void> *event);
-  void unsubscribe(SubscribableEvent s, SubscribeFunction<void> *event);
+  int subscribe(SubscribableEvent s, SubscribeFunction<> *event);
+  void unsubscribe(SubscribableEvent s, SubscribeFunction<> *event);
   void unsubscribe(SubscribableEvent s, int id);
 
   // using int as event id
-  int subscribe(unsigned int id, SubscribeFunction<void> *event);
-  void unsubscribe(unsigned int id, SubscribeFunction<void> *event);
+  int subscribe(unsigned int id, SubscribeFunction<> *event);
+  void unsubscribe(unsigned int id, SubscribeFunction<> *event);
   void unsubscribe(unsigned int id, int function_id);
 
   // using string as event id
-  int subscribe(std::string id, SubscribeFunction<void> *event);
-  void unsubscribe(std::string id, SubscribeFunction<void> *event);
+  int subscribe(std::string id, SubscribeFunction<> *event);
+  void unsubscribe(std::string id, SubscribeFunction<> *event);
   void unsubscribe(std::string id, int function_id);
 };
 
