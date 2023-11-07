@@ -9,7 +9,7 @@ using namespace fofx;
 namespace fofx {
 
 // private stuff
-int Subscribable::addToMap(SubscribableEvent s, SubscribeFunction<> *event) {
+int Subscribable::addToMap(SubscribableEvent s, SubscribeFunction<SubscribeResponseObject> *event) {
 
   bool valid = false;
   // check if event is valid
@@ -29,7 +29,7 @@ int Subscribable::addToMap(SubscribableEvent s, SubscribeFunction<> *event) {
   if (valid) {
     // check if key exists in map, if not create
     if (this->subscribers.find(s) == this->subscribers.end()) {
-      this->subscribers[s] = std::vector<SubscribeFunction<> *>();
+      this->subscribers[s] = std::vector<SubscribeFunction<SubscribeResponseObject> *>();
     }
     this->subscribers[s].push_back(event);
     return this->subscribers[s].size() - 1;
@@ -37,8 +37,7 @@ int Subscribable::addToMap(SubscribableEvent s, SubscribeFunction<> *event) {
   return -1;
 }
 
-bool Subscribable::removeFromMap(SubscribableEvent s,
-                                 SubscribeFunction<> *event) {
+bool Subscribable::removeFromMap(SubscribableEvent s, SubscribeFunction<SubscribeResponseObject> *event) {
   // check if key exists in map
   bool valid = false;
   if (this->subscribers.find(s) != this->subscribers.end()) {
@@ -90,44 +89,77 @@ std::vector<SubscribeFunction<args...>*> Subscribable::getFromMap(SubscribableEv
 	std::vector<SubscribeFunction<args...>*> found_functions;
 	// Check if the key exists in the map
   if (this->subscribers.find(s) != this->subscribers.end()) {
-
+    const auto& originalVector = this->subscribers[s];
+    for (auto func : originalVector) {
+      SubscribeFunction<args...>* specificFunc = new SubscribeFunction<args...>;
+      found_functions.push_back(specificFunc);
+    }
   }
-
 	return found_functions;
 }
 
-template <typename... args>
-int Subscribable::subscribe(SubscribableEvent s, SubscribeFunction<args...> *event) {
+
+//no argument subscribe
+int Subscribable::subscribe(SubscribableEvent s, SubscribeFunction<> *event) {
+
+	//cast to SubscribeFunction<SubscribeResponseObject>
+	SubscribeFunction<SubscribeResponseObject>* newFunction = (SubscribeFunction<SubscribeResponseObject>*)event;
+
+	// subscribe
+	return this->addToMap(s, newFunction);
+}
+
+int Subscribable::subscribe(unsigned int id, SubscribeFunction<> *event) {
+	//cast to SubscribeFunction<SubscribeResponseObject>
+	SubscribeFunction<SubscribeResponseObject>* newFunction = (SubscribeFunction<SubscribeResponseObject>*)event;
+
+	// subscribe
+	return this->addToMap(SubscribableEvent{id, ""}, newFunction);
+}
+
+int Subscribable::subscribe(std::string id, SubscribeFunction<> *event) {
+	//cast to SubscribeFunction<SubscribeResponseObject>
+	SubscribeFunction<SubscribeResponseObject>* newFunction = (SubscribeFunction<SubscribeResponseObject>*)event;
+
+	// subscribe
+	return this->addToMap(SubscribableEvent{0, id}, newFunction);
+}
+
+void Subscribable::unsubscribe(SubscribableEvent s, int function_id) {
+	// unsubscribe
+	this->removeFromMap(s, function_id);
+}
+
+
+
+int Subscribable::subscribe(SubscribableEvent s, SubscribeFunction<SubscribeResponseObject> *event) {
   // subscribe
   return this->addToMap(s, event);
 }
 
-void Subscribable::unsubscribe(SubscribableEvent s,
-                               SubscribeFunction<> *event) {
+void Subscribable::unsubscribe(SubscribableEvent s, SubscribeFunction<SubscribeResponseObject> *event) {
   // unsubscribe
   this->removeFromMap(s, event);
 }
 
 // id number for event
-template <typename... args>
-int Subscribable::subscribe(unsigned int id, SubscribeFunction<args...> *event) {
+int Subscribable::subscribe(unsigned int id, SubscribeFunction<SubscribeResponseObject> *event) {
   // subscribe
   return this->addToMap(SubscribableEvent{id, ""}, event);
 }
 
-void Subscribable::unsubscribe(unsigned int id, SubscribeFunction<> *event) {
+void Subscribable::unsubscribe(unsigned int id, SubscribeFunction<SubscribeResponseObject> *event) {
   // unsubscribe
   this->removeFromMap(SubscribableEvent{id, ""}, event);
 }
 
 // id string for event
-template <typename... args>
-int Subscribable::subscribe(std::string id, SubscribeFunction<args...> *event) {
+int Subscribable::subscribe(std::string id, SubscribeFunction<SubscribeResponseObject> *event) {
   // subscribe
   return this->addToMap(SubscribableEvent{0, id}, event);
 }
 
-void Subscribable::unsubscribe(std::string id, SubscribeFunction<> *event) {
+void Subscribable::unsubscribe(std::string id, SubscribeFunction<SubscribeResponseObject> *event) {
   // unsubscribe
   this->removeFromMap(SubscribableEvent{0, id}, event);
 }
