@@ -168,8 +168,6 @@ void Subscribable::notify(std::string id) {
   this->notify(SubscribableEvent{0, id});
 }
 
-
-
 void ExampleSubscribable::test() {
 	this->notify(SubscribableEvent{1, "test"});
 }
