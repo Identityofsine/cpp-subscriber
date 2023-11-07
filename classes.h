@@ -1,5 +1,6 @@
 #include <map>
 #include <string>
+#include <functional>
 #include <vector>
 
 namespace fofx {
@@ -35,15 +36,26 @@ struct SubscribableEvent {
 
 // generic subscriber class
 template <typename... args> struct SubscribeFunction {
-  void (*func)(args...);
+	std::function<void(args...)> func;
+
+	template <typename... OtherArgs>
+	operator SubscribeFunction<OtherArgs...>() {
+		SubscribeFunction<OtherArgs...> newFunction;
+		newFunction.func = [this](OtherArgs... a) {
+			this->func(a...);
+		};
+		return newFunction;
+	}
 };
 
 class Subscribable {
 
 private:
-  std::map<SubscribableEvent, std::vector<SubscribeFunction<> *>> subscribers;
+  std::map<SubscribableEvent, std::vector<SubscribeFunction<>*>> subscribers;
+
   int addToMap(SubscribableEvent s, SubscribeFunction<> *event);
-  std::vector<SubscribeFunction<>*> getFromMap(SubscribableEvent s);
+  template <typename... args> std::vector<SubscribeFunction<args...>*> getFromMap(SubscribableEvent s);
+
   bool removeFromMap(SubscribableEvent s, SubscribeFunction<> *event);
   bool removeFromMap(SubscribableEvent s, int function_id);
   std::vector<SubscribableEvent> validEvents;
@@ -60,23 +72,25 @@ protected:
 public:
   Subscribable(std::vector<SubscribableEvent> valid_events = {}) {
     // init map
-    subscribers =
-        std::map<SubscribableEvent, std::vector<SubscribeFunction<> *>>();
+    subscribers = std::map<SubscribableEvent, std::vector<SubscribeFunction<> *>>();
     this->validEvents = valid_events;
   }
 
-  // using SubscriableEvent
-  int subscribe(SubscribableEvent s, SubscribeFunction<> *event);
+  // using SubscriableEvent //default event template args
+	template <typename... args> 
+  int subscribe(SubscribableEvent s, SubscribeFunction<args...> *event);
   void unsubscribe(SubscribableEvent s, SubscribeFunction<> *event);
   void unsubscribe(SubscribableEvent s, int id);
 
   // using int as event id
-  int subscribe(unsigned int id, SubscribeFunction<> *event);
+	template <typename... args> 
+  int subscribe(unsigned int id, SubscribeFunction<args...> *event);
   void unsubscribe(unsigned int id, SubscribeFunction<> *event);
   void unsubscribe(unsigned int id, int function_id);
 
   // using string as event id
-  int subscribe(std::string id, SubscribeFunction<> *event);
+	template <typename... args> 
+  int subscribe(std::string id, SubscribeFunction<args...> *event);
   void unsubscribe(std::string id, SubscribeFunction<> *event);
   void unsubscribe(std::string id, int function_id);
 };

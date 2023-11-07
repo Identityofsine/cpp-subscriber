@@ -84,18 +84,20 @@ bool Subscribable::removeFromMap(SubscribableEvent s, int function_id) {
 	return false;
 }
 
-std::vector<SubscribeFunction<>*> Subscribable::getFromMap(SubscribableEvent s) {
+template <typename... args>
+std::vector<SubscribeFunction<args...>*> Subscribable::getFromMap(SubscribableEvent s) {
 
-	std::vector<SubscribeFunction<>*> found_functions;
-	// check if key exists in map
-	if (this->subscribers.find(s) != this->subscribers.end()) {
-		found_functions = this->subscribers[s];
-	} 
+	std::vector<SubscribeFunction<args...>*> found_functions;
+	// Check if the key exists in the map
+  if (this->subscribers.find(s) != this->subscribers.end()) {
+
+  }
 
 	return found_functions;
 }
 
-int Subscribable::subscribe(SubscribableEvent s, SubscribeFunction<> *event) {
+template <typename... args>
+int Subscribable::subscribe(SubscribableEvent s, SubscribeFunction<args...> *event) {
   // subscribe
   return this->addToMap(s, event);
 }
@@ -107,7 +109,8 @@ void Subscribable::unsubscribe(SubscribableEvent s,
 }
 
 // id number for event
-int Subscribable::subscribe(unsigned int id, SubscribeFunction<> *event) {
+template <typename... args>
+int Subscribable::subscribe(unsigned int id, SubscribeFunction<args...> *event) {
   // subscribe
   return this->addToMap(SubscribableEvent{id, ""}, event);
 }
@@ -118,7 +121,8 @@ void Subscribable::unsubscribe(unsigned int id, SubscribeFunction<> *event) {
 }
 
 // id string for event
-int Subscribable::subscribe(std::string id, SubscribeFunction<> *event) {
+template <typename... args>
+int Subscribable::subscribe(std::string id, SubscribeFunction<args...> *event) {
   // subscribe
   return this->addToMap(SubscribableEvent{0, id}, event);
 }
@@ -131,12 +135,12 @@ void Subscribable::unsubscribe(std::string id, SubscribeFunction<> *event) {
 // notify hooks
 template <typename... args>
 void Subscribable::notify(SubscribableEvent e, args... a) {
-  auto functions = this->getFromMap(e);
+  auto functions = this->getFromMap<args...>(e);
   if (functions.size() <= 0)
     return;
 
   for (auto &f : functions) {
-    f.func(a...);
+    f->func(a...);
   };
 }
 
@@ -169,7 +173,7 @@ void Subscribable::notify(std::string id) {
 }
 
 void ExampleSubscribable::test() {
-	this->notify(SubscribableEvent{1, "test"});
+	this->notify(SubscribableEvent{1, "test"}, 0);
 }
 
 }; // namespace fofx
