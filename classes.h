@@ -13,6 +13,9 @@ struct SubscribableEvent {
 
   // equal operator
   bool operator==(const SubscribableEvent &other) const {
+		if(this->name == "" && other.name == "") return (this->id == other.id);
+		if(this->id == 0 && other.id == 0) return (this->name == other.name);
+
     return (this->id == other.id || this->name == other.name);
   }
 	//define operators

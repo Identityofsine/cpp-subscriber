@@ -85,6 +85,8 @@ bool Subscribable::removeFromMap(SubscribableEvent s, int function_id) {
 
 std::vector<SubscribeFunction<SubscribeResponseObject>*> Subscribable::getFromMap(SubscribableEvent s) {
 
+	printf("getFromMap: %d, %s\n", s.id, s.name.c_str());	
+
 	std::vector<SubscribeFunction<SubscribeResponseObject>*> found_functions;
 	// Check if the key exists in the map
   if (this->subscribers.find(s) != this->subscribers.end()) {
@@ -167,8 +169,9 @@ void Subscribable::notify(SubscribableEvent e, args... a) {
   if (functions.size() <= 0)
     return;
 
+	printf("notify: %d, %s | functions : %d\n", e.id, e.name.c_str(), (int)functions.size());
   for (auto &f : functions) {
-    f->func({true, (void*)a...});
+    f->func({true, (args*)a...});
   };
 }
 
@@ -205,7 +208,7 @@ void ExampleSubscribable::test() {
 }
 
 void ExampleSubscribable::test_2() {
-	this->notify(SubscribableEvent{this->TEST_EVENT, "test_2"}, "Hey, I am 'test_2' - A String Example!");
+	this->notify(SubscribableEvent{this->TEST_EVENT_2, "test_2"}, "Hey, I am 'test_2' - A String Example!");
 }
 
 }; // namespace fofx
