@@ -1,4 +1,5 @@
 #include "classes.h"
+#include <algorithm>
 
 using namespace fofx;
 
@@ -12,11 +13,13 @@ namespace fofx {
 int Subscribable::addToMap(SubscribableEvent s, SubscribeFunction<SubscribeResponseObject> *event) {
 
   bool valid = false;
+	SubscribableEvent copy = {s.id, s.name};
   // check if event is valid
   if (this->validEvents.size() > 0) {
     for (auto &e : this->validEvents) {
       if (e == s) {
         valid = true;
+				copy = {e.id, e.name};
         break;
       }
     }
@@ -28,13 +31,32 @@ int Subscribable::addToMap(SubscribableEvent s, SubscribeFunction<SubscribeRespo
 
   if (valid) {
     // check if key exists in map, if not create
-    if (this->subscribers.find(s) == this->subscribers.end()) {
-      this->subscribers[s] = std::vector<SubscribeFunction<SubscribeResponseObject> *>();
+    if (this->subscribers.find(copy) == this->subscribers.end()) {
+      this->subscribers[copy] = std::vector<SubscribeFunction<SubscribeResponseObject> *>();
     }
-    this->subscribers[s].push_back(event);
-    return this->subscribers[s].size() - 1;
+    this->subscribers[copy].push_back(event);
+    return this->subscribers[copy].size() - 1;
   }
   return -1;
+}
+
+
+template <typename T>
+void findIndex(std::vector<T> vector, T object, int &output) {
+	//check if table is empty
+	if(vector.size() <= 0) {
+		output = -1;	
+		return;
+	}
+	//check if object is valid
+	int found_index;
+	if((found_index = std::find(vector.begin(), vector.end(), object)) != vector.end()) {
+		output = found_index;
+		return;
+ 	} else {
+		output = -1;
+		return;
+	}
 }
 
 bool Subscribable::removeFromMap(SubscribableEvent s, SubscribeFunction<SubscribeResponseObject> *event) {
@@ -62,6 +84,7 @@ bool Subscribable::removeFromMap(SubscribableEvent s, SubscribeFunction<Subscrib
 bool Subscribable::removeFromMap(SubscribableEvent s, int function_id) {
 	bool valid = false;
 	// check if key exists in map
+	int event_index = -1;
 	if (this->subscribers.find(s) != this->subscribers.end()) {
 		valid = true;
 	} else {
@@ -85,7 +108,6 @@ bool Subscribable::removeFromMap(SubscribableEvent s, int function_id) {
 
 std::vector<SubscribeFunction<SubscribeResponseObject>*> Subscribable::getFromMap(SubscribableEvent s) {
 
-	printf("getFromMap: %d, %s\n", s.id, s.name.c_str());	
 
 	std::vector<SubscribeFunction<SubscribeResponseObject>*> found_functions;
 	// Check if the key exists in the map
@@ -169,7 +191,6 @@ void Subscribable::notify(SubscribableEvent e, args... a) {
   if (functions.size() <= 0)
     return;
 
-	printf("notify: %d, %s | functions : %d\n", e.id, e.name.c_str(), (int)functions.size());
   for (auto &f : functions) {
     f->func({true, (args*)a...});
   };
