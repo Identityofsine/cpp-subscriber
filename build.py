@@ -10,8 +10,8 @@ class CppFile:
     def __repr__(self):
         return self.name + '\n' + self.content
     
-    @static
-    def constructFromFile(self, path):
+    @staticmethod
+    def constructfromfile(path):
         with open(path, 'r') as file:
             filename = path.split('/')[-1]
             return CppFile(filename, file.read())
@@ -26,7 +26,7 @@ class SourceFile(CppFile):
     def __repr__(self):
         return super().__repr__() + '\n' + self.header.name
     
-    def setHeader(self, header):
+    def setheader(self, header):
         self.header = header
     
 class HeaderFile(CppFile):
@@ -38,39 +38,48 @@ class HeaderFile(CppFile):
     def __repr__(self):
         return super().__repr__() + '\n' + str(self.sources)
     
-    def addSource(self, source):
+    def addsource(self, source):
         self.sources.append(source)
 
 class CodeSorter:
-    def __init__(self, content = ""):
+    def __init__(self, content: CppFile):
         self.headers = []
         self.sources = []
         self.content = content
 
-    def getHeaders(self):
+    def getheaders(self):
         return self.headers
 
-    def findHeadersAtTop(self):
-        #find the headers at the top
-        for line in self.content.splitlines():
-            if line.startswith('#'):
-                if line.startswith('#include'):
-                    self.headers.append(line)
-                else:
-                    break
-            else:
-                break
+    def moveincludestotop(self):
+        file_content = self.content.content
+        includes = []
+        for line in file_content.split('\n'):
+            if line.startswith('#include'):
+                #check for duplicate
+                if line in includes:
+                    continue
+                includes.append(line)
+                #remove the include from the file
+                file_content = file_content.replace(line, '')
+        #add the includes to the top of the file
+        for include in includes:
+            file_content = include + '\n' + file_content
+        return includes
+
+
+    def sortdeclaration(self):
         pass
 
-    def moveIncludesToTop(self):
-        #search for includes in content, line by line
-        #if found remove, and move to top of content
-
-    def sortDeclaration(self):
-        pass
 
 
 
+def main() :
+    header_path = "./classes.h"
+    source_path = "./subscriberobj.cpp"
+    header = HeaderFile.constructfromfile(header_path)
+    source = SourceFile.constructfromfile(source_path)
+    code_sorter: CodeSorter = CodeSorter(header)
+    found_includes = code_sorter.moveincludestotop()
 
 
-
+main()
