@@ -60,7 +60,7 @@ private:
   std::map<SubscribableEvent, std::vector<SubscribeFunction<SubscribeResponseObject>*>> subscribers;
 
   int addToMap(SubscribableEvent s, SubscribeFunction<SubscribeResponseObject> *event);
-  template <typename... args> std::vector<SubscribeFunction<args...>*> getFromMap(SubscribableEvent s);
+  std::vector<SubscribeFunction<SubscribeResponseObject>*> getFromMap(SubscribableEvent s);
 
   bool removeFromMap(SubscribableEvent s, SubscribeFunction<SubscribeResponseObject> *event);
   bool removeFromMap(SubscribableEvent s, int function_id);

@@ -83,18 +83,14 @@ bool Subscribable::removeFromMap(SubscribableEvent s, int function_id) {
 	return false;
 }
 
-template <typename... args>
-std::vector<SubscribeFunction<args...>*> Subscribable::getFromMap(SubscribableEvent s) {
+std::vector<SubscribeFunction<SubscribeResponseObject>*> Subscribable::getFromMap(SubscribableEvent s) {
 
-	std::vector<SubscribeFunction<args...>*> found_functions;
+	std::vector<SubscribeFunction<SubscribeResponseObject>*> found_functions;
 	// Check if the key exists in the map
   if (this->subscribers.find(s) != this->subscribers.end()) {
-    const auto& originalVector = this->subscribers[s];
-    for (auto func : originalVector) {
-      SubscribeFunction<args...>* specificFunc = new SubscribeFunction<args...>;
-      found_functions.push_back(specificFunc);
-    }
+   found_functions = this->subscribers[s];
   }
+
 	return found_functions;
 }
 
@@ -167,12 +163,12 @@ void Subscribable::unsubscribe(std::string id, SubscribeFunction<SubscribeRespon
 // notify hooks
 template <typename... args>
 void Subscribable::notify(SubscribableEvent e, args... a) {
-  auto functions = this->getFromMap<args...>(e);
+  auto functions = this->getFromMap(e);
   if (functions.size() <= 0)
     return;
 
   for (auto &f : functions) {
-    f->func(a...);
+    f->func({true, (void*)a...});
   };
 }
 
@@ -192,7 +188,7 @@ void Subscribable::notify(SubscribableEvent e) {
     return;
 
   for (auto &f : functions) {
-    f->func();
+    f->func({true, 0});
   };
 }
 
