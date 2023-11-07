@@ -201,7 +201,11 @@ void Subscribable::notify(std::string id) {
 }
 
 void ExampleSubscribable::test() {
-	this->notify(SubscribableEvent{1, "test"}, 5124);
+	this->notify(SubscribableEvent{this->TEST_EVENT, "test"}, 5124);
+}
+
+void ExampleSubscribable::test_2() {
+	this->notify(SubscribableEvent{this->TEST_EVENT, "test_2"}, "Hey, I am 'test_2' - A String Example!");
 }
 
 }; // namespace fofx

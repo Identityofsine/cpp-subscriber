@@ -104,10 +104,16 @@ public:
 };
 
 class ExampleSubscribable : public Subscribable {
+private: 
+	enum ExampleSubscribableEvents {
+		TEST_EVENT = 1,
+		TEST_EVENT_2 = 2
+	};
 
 public:
-  ExampleSubscribable() : Subscribable({SubscribableEvent{1, "test"}}) {}
+  ExampleSubscribable() : Subscribable({{TEST_EVENT, "test_1"}, {TEST_EVENT_2, "test_2"}}) {}
   void test(); 
+	void test_2();
 };
 
 }; // namespace fofx
