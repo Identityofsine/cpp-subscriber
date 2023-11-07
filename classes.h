@@ -106,17 +106,32 @@ public:
   void unsubscribe(std::string id, int function_id);
 };
 
+struct ExampleStructForPointer {
+	int field_number;
+	char* field_name;
+};
+
+
+struct ExampleStruct {
+	int field_1;
+	int field_2;
+	char* field_3;
+	ExampleStructForPointer *field_4;
+};
+
 class ExampleSubscribable : public Subscribable {
 private: 
 	enum ExampleSubscribableEvents {
-		TEST_EVENT = 1,
-		TEST_EVENT_2 = 2
+		TEST_EVENT = 1, //int
+		TEST_EVENT_2 = 2, //string
+		TEST_EVENT_3 = 3 //structure 
 	};
 
 public:
-  ExampleSubscribable() : Subscribable({{TEST_EVENT, "test_1"}, {TEST_EVENT_2, "test_2"}}) {}
+  ExampleSubscribable() : Subscribable({{TEST_EVENT, "test_1"}, {TEST_EVENT_2, "test_2"}, {TEST_EVENT_3, "test_3"}}) {}
   void test(); 
 	void test_2();
+	void test_3();
 };
 
 }; // namespace fofx

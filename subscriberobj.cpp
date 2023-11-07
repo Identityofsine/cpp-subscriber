@@ -232,4 +232,15 @@ void ExampleSubscribable::test_2() {
 	this->notify(SubscribableEvent{this->TEST_EVENT_2, "test_2"}, "Hey, I am 'test_2' - A String Example!");
 }
 
+
+void ExampleSubscribable::test_3() {
+
+
+	//create struct
+	ExampleStructForPointer p = {1, "Bobert"};
+	ExampleStruct s = {2, -64, "Luie", &p};
+
+	this->notify(SubscribableEvent{this->TEST_EVENT_3, "test_3"}, &p);
+}
+
 }; // namespace fofx
