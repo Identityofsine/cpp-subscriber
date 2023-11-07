@@ -240,7 +240,7 @@ void ExampleSubscribable::test_3() {
 	ExampleStructForPointer p = {1, "Bobert"};
 	ExampleStruct s = {2, -64, "Luie", &p};
 
-	this->notify(SubscribableEvent{this->TEST_EVENT_3, "test_3"}, &p);
+	this->notify(SubscribableEvent{this->TEST_EVENT_3, "test_3"}, &s);
 }
 
 }; // namespace fofx
