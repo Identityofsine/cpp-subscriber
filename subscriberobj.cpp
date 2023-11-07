@@ -201,7 +201,7 @@ void Subscribable::notify(std::string id) {
 }
 
 void ExampleSubscribable::test() {
-	this->notify(SubscribableEvent{1, "test"}, 0);
+	this->notify(SubscribableEvent{1, "test"}, 5124);
 }
 
 }; // namespace fofx
