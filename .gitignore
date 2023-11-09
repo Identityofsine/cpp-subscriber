@@ -4,4 +4,7 @@ build/*
 .ccls-cache
 .ccls-cache/
 .ccls-cache/*
-
+./includes/
+./includes/*
+includes/*
+includes/
