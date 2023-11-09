@@ -10,7 +10,7 @@ int main() {
   
 	//very important to know what the data pointer is
 	s.subscribe(1, new SubscribeFunction<SubscribeResponseObject>{[](SubscribeResponseObject e) {
-		DEBUGPRINT("Subscribe Test 1 with int example: %d\n", (int)e.data);
+		DEBUGPRINT("Subscribe Test 1 with int example: %d\n", *((int *)e.data));
 	}});
 
 	s.subscribe(2, new SubscribeFunction<SubscribeResponseObject>{[](SubscribeResponseObject e) {
